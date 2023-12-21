@@ -1,4 +1,3 @@
-#
 # Licensed to the Apache Software Foundation (ASF) under one
 # or more contributor license agreements.  See the NOTICE file
 # distributed with this work for additional information
@@ -15,13 +14,28 @@
 # KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations
 # under the License.
-#
--r base.in
--e .[cors,druid,hive,mysql,postgres,gsheets-export,thumbnails]
-ipython
-progress>=1.5,<2
-pyinstrument>=4.0.2,<5
-pylint
-python-ldap>=3.4.3
-setuptools>=65.5.1
-sqloxide
+import contextlib
+
+import simplejson as json
+from flask import request
+from flask_appbuilder.api import expose
+
+from superset import event_logger
+from superset.superset_typing import FlaskResponse
+
+from .base import BaseSupersetView
+
+
+class ExportView(BaseSupersetView):
+    route_base = "/export"
+
+    @expose("/<string:client_id>/google-sheets/", methods=("GET",))
+    @event_logger.log_this
+    def google_sheets(
+        self, client_id: int  # pylint: disable=unused-argument
+    ) -> FlaskResponse:
+        payload = {}
+        if form_data := request.form.get("form_data"):
+            with contextlib.suppress(json.JSONDecodeError):
+                payload["requested_query"] = json.loads(form_data)
+        return self.render_app_template(payload)
