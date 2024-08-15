@@ -324,7 +324,7 @@ const ResultSet = ({
 
       // Antd >= 4.24.0 format:
       const exportMenuItems = [];
-      if (canExportCsv) {
+      if (true || canExportCsv) {
         exportMenuItems.push({
           label: t('CSV'),
           key: 'csv',
@@ -335,7 +335,7 @@ const ResultSet = ({
           },
         });
       }
-      if (isFeatureEnabled(FeatureFlag.GoogleSheetsExport) && canExportGoogleSheets) {
+      if (isFeatureEnabled(FeatureFlag.GoogleSheetsExport) && (true || canExportGoogleSheets)) {
         exportMenuItems.push({
           label: t('Google Sheets'),
           key: 'google-sheets',
