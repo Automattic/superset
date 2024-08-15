@@ -61,13 +61,19 @@ if feature_flag_manager.is_feature_enabled("GOOGLE_SHEETS_EXPORT"):
 
 def upload_df_to_new_sheet(name: str, df: pd.DataFrame) -> str:
     assert feature_flag_manager.is_feature_enabled("GOOGLE_SHEETS_EXPORT")
+
+    # Convert any non-serializable types like datetimes to strings:
+    df_clone = df.copy()
+    object_columns = df_clone.select_dtypes(include=['object']).columns
+    df_clone[object_columns] = df_clone[object_columns].astype('string')
+
     gc = gspread.service_account(
         filename=current_app.config["GOOGLE_SHEETS_EXPORT_SERVICE_ACCOUNT_JSON_PATH"],
     )
     spreadsheet = gc.create(f"{name} {datetime.datetime.utcnow().isoformat()}")
     spreadsheet.sheet1.update(
         range_name="A1",
-        values=([df.columns.values.tolist()] + df.values.tolist()),
+        values=([df_clone.columns.values.tolist()] + df_clone.values.tolist()),
     )
     spreadsheet.share(**current_app.config["GOOGLE_SHEETS_EXPORT_SHARE_PERMISSIONS"])
     return spreadsheet.id
