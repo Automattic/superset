@@ -73,7 +73,7 @@ def _format_cell(x) -> Union[str, Real]:
 def upload_df_to_new_sheet(name: str, df: pd.DataFrame) -> str:
     assert feature_flag_manager.is_feature_enabled("GOOGLE_SHEETS_EXPORT")
 
-    formatted_df = df.map(_format_cell)
+    formatted_df = df.applymap(_format_cell)
 
     gc = gspread.service_account(
         filename=current_app.config["GOOGLE_SHEETS_EXPORT_SERVICE_ACCOUNT_JSON_PATH"],
