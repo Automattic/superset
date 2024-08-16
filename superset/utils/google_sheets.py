@@ -20,6 +20,7 @@
 import datetime
 from numbers import Real
 import os
+from typing import Union
 
 import pandas as pd
 from flask import current_app
@@ -60,7 +61,7 @@ if feature_flag_manager.is_feature_enabled("GOOGLE_SHEETS_EXPORT"):
         ].keys()
 
 
-def _format_cell(x):
+def _format_cell(x) -> Union[str, Real]:
     "Ensure a pandas value is JSONSerializable and the type is helpful for GSheets."
     if pd.isnull(x):
         return ""
